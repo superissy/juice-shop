@@ -14,6 +14,9 @@ env:
     ECS_SERVICE_NAME: "${{ github.actor }}_service"
     ECS_TASK_DEFINITION: ".aws/task-definition.json"
     AWS_ROLE_TO_ASSUME: "arn:aws:iam::438270576332:role/oidc_github_action_role"
+permissions:
+    id-token: write   # This is required for requesting the JWT
+    contents: read    # This is required for actions/checkout
 jobs:
     scan-repo-trivy:
         runs-on: ubuntu-latest
