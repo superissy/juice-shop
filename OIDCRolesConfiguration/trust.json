@@ -12,7 +12,7 @@
                   "token.actions.githubusercontent.com:sub": [
                       "repo:superissy/OIDC-ECS-Cluster-Action:pull_request",
                       "repo:superissy/OIDC-ECS-Cluster-Action:ref:refs/heads/main",
-                      "repo:superissy/juice-shop:pull_request",
+                      "repo:superissy/juice-shop",
                       "repo:superissy/juice-shop:ref:refs/heads/main",
                       "repo:xsave-co/*:pull_request",
                       "repo:xsave-co:/*:ref:refs/head/main"
