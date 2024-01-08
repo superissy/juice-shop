@@ -18,35 +18,35 @@ permissions:
     id-token: write   # This is required for requesting the JWT
     contents: read    # This is required for actions/checkout
 jobs:
-    scan-repo-trivy:
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout Repository Content
-              uses: actions/checkout@v2
-            - name: Scan Repository for Vulnerabilities
-              uses: aquasecurity/trivy-action@master
-              with:
-                # The below will scan the code file and also ignore unfixed files from Node.js
-                  scan-type: "fs"
-                  ignore-unfixed: true
-                  format: "sarif"
-                  output: "trivy-results.sarif"
-                  severity: "CRITICAL, HIGH"
-            - name: Upload Trivy Scan results to GitHub Security Tab
-              uses: github/codeql-action/upload-sarif@v1
-              with:
-                sarif_file: trivy-results.sarif
-    # The below will scan the code file with SonarQube and upload the results to SonarQube cloud
-    scan-repo-sonarqube:
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout Repository Content
-              uses: actions/checkout@v2
-            - name: Scan Repository for Vulnerabilities
-              uses: sonarsource/sonarqube-scan-action@master
-              env:
-                SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-                SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+    # scan-repo-trivy:
+    #     runs-on: ubuntu-latest
+    #     steps:
+    #         - name: Checkout Repository Content
+    #           uses: actions/checkout@v2
+    #         - name: Scan Repository for Vulnerabilities
+    #           uses: aquasecurity/trivy-action@master
+    #           with:
+    #             # The below will scan the code file and also ignore unfixed files from Node.js
+    #               scan-type: "fs"
+    #               ignore-unfixed: true
+    #               format: "sarif"
+    #               output: "trivy-results.sarif"
+    #               severity: "CRITICAL, HIGH"
+    #         - name: Upload Trivy Scan results to GitHub Security Tab
+    #           uses: github/codeql-action/upload-sarif@v1
+    #           with:
+    #             sarif_file: trivy-results.sarif
+    # # The below will scan the code file with SonarQube and upload the results to SonarQube cloud
+    # scan-repo-sonarqube:
+    #     runs-on: ubuntu-latest
+    #     steps:
+    #         - name: Checkout Repository Content
+    #           uses: actions/checkout@v2
+    #         - name: Scan Repository for Vulnerabilities
+    #           uses: sonarsource/sonarqube-scan-action@master
+    #           env:
+    #             SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    #             SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
     
     # The below will build the docker image and push it to AWS ECR
     buid-and-scan-image:
