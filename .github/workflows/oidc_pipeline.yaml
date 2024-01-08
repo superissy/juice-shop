@@ -9,10 +9,11 @@ on:
       - develop
 #The below env is used to reference the image and repository name in the Job step
 env:
-    IMAGE_NAME: "owasp-juice-shop"
+    IMAGE_NAME: "owasp-juice-shop1"
     REPOSITORY_NAME: "${{ github.actor }}"
     ECS_SERVICE_NAME: "${{ github.actor }}_service"
     ECS_TASK_DEFINITION: ".aws/task-definition.json"
+    AWS_ROLE_TO_ASSUME: "arn:aws:iam::438270576332:role/oidc_github_action_role"
 jobs:
     scan-repo-trivy:
         runs-on: ubuntu-latest
@@ -52,10 +53,10 @@ jobs:
             - name: Checkout Repository Content
               uses: actions/checkout@v2
             - name: Configure AWS Credentials
-              uses: aws-actions/configure-aws-credentials@v2
+              uses: aws-actions/configure-aws-credentials@v3
               with:
-                aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-                aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                role-to-assume: ${{ env.AWS_ROLE_TO_ASSUME }}
+                role-session-name: ecs-deploy-action-session
                 aws-region: ${{ secrets.AWS_REGION }}
             - name: Check if AWS ECR Repository exists
             # The ecr_repo this is used to reference the name of a specific section in the Job step
@@ -86,7 +87,7 @@ jobs:
             #     image-ref: ${{ secrets.AWS_REGISTRY }}/$IMAGE_NAME:latest
             #     format: "sarif"
             #     output: "trivy-results.sarif"
-                # severity: "CRITICAL, HIGH"
+            #     severity: "CRITICAL, HIGH"
 
             # - name: Upload Trivy Scan results to GitHub Security Tab
             #   uses: github/codeql-action/upload-sarif@v1
@@ -115,18 +116,18 @@ jobs:
               run: |
                 aws ecs create-cluster --cluster-name "${{ env.REPOSITORY_NAME }}_${{ env.IMAGE_NAME }}_cluster" --region ${{ secrets.AWS_REGION }}
 
-            - name: Create ECS Task Definition
-              uses: aws-actions/amazon-ecs-render-task-definition@v1
-              with:
-                task-definition: ${{ env.ECS_TASK_DEFINITION }}
-                container-name: ${{ env.IMAGE_NAME }}
-                image: ${{ secrets.AWS_REGISTRY }}/"${{ env.REPOSITORY_NAME }}_${{ env.IMAGE_NAME }}":latest
+            # - name: Create ECS Task Definition
+            #   uses: aws-actions/amazon-ecs-render-task-definition@v1
+            #   with:
+            #     task-definition: ${{ env.ECS_TASK_DEFINITION }}
+            #     container-name: ${{ env.IMAGE_NAME }}
+            #     image: ${{ secrets.AWS_REGISTRY }}/"${{ env.REPOSITORY_NAME }}_${{ env.IMAGE_NAME }}":latest
                           
-            - name: Deploy Amazon ECS task definition
-              uses: aws-actions/amazon-ecs-deploy-task-definition@v1.4.10
-              with:
-                    task-definition: ${{ env.ECS_TASK_DEFINITION }}
-                    service: ${{ env.ECS_SERVICE_NAME }}
-                    cluster: "${{ env.REPOSITORY_NAME }}_${{ env.IMAGE_NAME }}_cluster"
-                    wait-for-service-stability: true
+            # - name: Deploy Amazon ECS task definition
+            #   uses: aws-actions/amazon-ecs-deploy-task-definition@v1.4.10
+            #   with:
+            #         task-definition: ${{ env.ECS_TASK_DEFINITION }}
+            #         service: ${{ env.ECS_SERVICE_NAME }}
+            #         cluster: "${{ env.REPOSITORY_NAME }}_${{ env.IMAGE_NAME }}_cluster"
+            #         wait-for-service-stability: true
                     
